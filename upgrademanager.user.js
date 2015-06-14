@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         AutoUpgrade
+// @name         Monster Minigame AutoUpgrade
 // @namespace    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager
 // @version      0.2
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
