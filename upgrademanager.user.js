@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Monster Minigame AutoUpgrade
 // @namespace    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager
-// @version      0.5
+// @version      0.6
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
@@ -209,22 +209,19 @@ function startAutoUpgradeManager() {
 		return best;
 	};
 
-	var bestHealthUpgrade = function() {
-		var best = { id: -1, cost: 0, hpg: 0 };
-		var result, hpg;
-		gHealthUpgrades.forEach(function(id) {
-			result = calculateUpgradeTree(id);
-			hpg = scene.m_rgTuningData.player.hp * result.boost / result.cost;
-			if (hpg >= best.hpg) {
-				if (result.required !== undefined) id = result.required;
-				cost = scene.GetUpgradeCost(id);
-				if (cost <= scene.m_rgPlayerData.gold || (best.cost === 0 || cost < best.cost)) { // TODO
-					best = { id: id, cost: cost, hpg: hpg };
-				}
-			}
-		});
-		return best;
-	};
+  var bestHealthUpgrade = function() {
+    var best = { id: -1, cost: 0, hpg: 0 };
+    var result, hpg;
+    gHealthUpgrades.forEach(function(id) {
+      result = calculateUpgradeTree(id);
+      hpg = scene.m_rgTuningData.player.hp * result.boost / result.cost;
+      if (hpg >= best.hpg) {
+        if (result.required !== undefined) id = result.required;
+        best = { id: id, cost: scene.GetUpgradeCost(id), hpg: hpg };
+      }
+    });
+    return best;
+  };
 
 	var bestDamageUpgrade = function() {
 		var best = { id: -1, cost: 0, dpg: 0 };
