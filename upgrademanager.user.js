@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Monster Minigame AutoUpgrade
 // @namespace    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager
-// @version      0.6
+// @version      0.7
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
@@ -26,10 +26,11 @@ var upgradeManagerFreq = 5000;
 var clicksPerSecond = 20;
 var autoClickerVariance = 0;
 
+var survivalTime = 30;
 var autoUpgradeManager, upgradeManagerPrefilter;
 
 function startAutoUpgradeManager() {
-	if( autoUpgradeManager ) {
+	if (autoUpgradeManager) {
 		console.log("UpgradeManager is already running!");
 		return;
 	}
@@ -37,10 +38,6 @@ function startAutoUpgradeManager() {
 	/************
 	 * SETTINGS *
 	 ************/
-	// On each level, we check for the lane that has the highest enemy DPS.
-	// Based on that DPS, if we would not be able to survive more than
-	// `survivalTime` seconds, we should buy some armor.
-	var survivalTime = 15;
 
 	// Should we highlight the item we're going for next?
 	var highlightNext = true;
@@ -77,10 +74,22 @@ function startAutoUpgradeManager() {
 	};
 
 	var necessary = [
-		{ id: 0, level: 1 }, // Light Armor
-		{ id: 11, level: 1 }, // Medics
-		{ id: 2, level: 10 }, // Armor Piercing Round
-		{ id: 1, level: 10 }, // Auto-fire Cannon
+		{
+			id: 0,
+			level: 1
+		}, // Light Armor
+		{
+			id: 11,
+			level: 1
+		}, // Medics
+		{
+			id: 2,
+			level: 10
+		}, // Armor Piercing Round
+		{
+			id: 1,
+			level: 10
+		}, // Auto-fire Cannon
 	];
 
 	var gAbilities = [
@@ -102,13 +111,21 @@ function startAutoUpgradeManager() {
 	var gDamageUpgrades = [];
 
 	Object.keys(scene.m_rgTuningData.upgrades)
-		.sort(function(a, b) { return a - b; }) // why is default sort string comparison
+		.sort(function(a, b) {
+			return a - b;
+		}) // why is default sort string comparison
 		.forEach(function(id) {
 			var upgrade = scene.m_rgTuningData.upgrades[id];
 			switch (upgrade.type) {
-				case 0: gHealthUpgrades.push(+id); break;
-				case 1: gAutoUpgrades.push(+id); break;
-				case 2: gDamageUpgrades.push(+id); break;
+				case 0:
+					gHealthUpgrades.push(+id);
+					break;
+				case 1:
+					gAutoUpgrades.push(+id);
+					break;
+				case 2:
+					gDamageUpgrades.push(+id);
+					break;
 			}
 		});
 
@@ -120,8 +137,15 @@ function startAutoUpgradeManager() {
 		return function(refresh) {
 			if (!cache || refresh) {
 				cache = gElementalUpgrades
-					.map(function(id) { return { id: id, level: scene.GetUpgradeLevel(id) }; })
-					.sort(function(a, b) { return b.level - a.level; });
+					.map(function(id) {
+						return {
+							id: id,
+							level: scene.GetUpgradeLevel(id)
+						};
+					})
+					.sort(function(a, b) {
+						return b.level - a.level;
+					});
 			}
 			return cache;
 		};
@@ -178,17 +202,27 @@ function startAutoUpgradeManager() {
 			}
 		}
 
-		return { boost: boost, cost: cost, required: parent };
+		return {
+			boost: boost,
+			cost: cost,
+			required: parent
+		};
 	};
 
 	var necessaryUpgrade = function() {
-		var best = { id: -1, cost: 0 };
+		var best = {
+			id: -1,
+			cost: 0
+		};
 		var wanted, id;
 		while (necessary.length > 0) {
 			wanted = necessary[0];
 			id = wanted.id;
 			if (scene.GetUpgradeLevel(id) < wanted.level) {
-				best = { id: id, cost: scene.GetUpgradeCost(id) };
+				best = {
+					id: id,
+					cost: scene.GetUpgradeCost(id)
+				};
 				break;
 			}
 			necessary.shift();
@@ -197,11 +231,17 @@ function startAutoUpgradeManager() {
 	};
 
 	var nextAbilityUpgrade = function() {
-		var best = { id: -1, cost: 0 };
+		var best = {
+			id: -1,
+			cost: 0
+		};
 		if (autoBuyAbilities) {
 			gAbilities.some(function(id) {
 				if (canUpgrade(id) && scene.GetUpgradeLevel(id) < 1) {
-					best = { id: id, cost: scene.GetUpgradeCost(id) };
+					best = {
+						id: id,
+						cost: scene.GetUpgradeCost(id)
+					};
 					return true;
 				}
 			});
@@ -209,28 +249,44 @@ function startAutoUpgradeManager() {
 		return best;
 	};
 
-  var bestHealthUpgrade = function() {
-    var best = { id: -1, cost: 0, hpg: 0 };
-    var result, hpg;
-    gHealthUpgrades.forEach(function(id) {
-      result = calculateUpgradeTree(id);
-      hpg = scene.m_rgTuningData.player.hp * result.boost / result.cost;
-      if (hpg >= best.hpg) {
-        if (result.required !== undefined) id = result.required;
-        best = { id: id, cost: scene.GetUpgradeCost(id), hpg: hpg };
-      }
-    });
-    return best;
-  };
+	var bestHealthUpgrade = function() {
+		var best = {
+			id: -1,
+			cost: 0,
+			hpg: 0
+		};
+		var result, hpg;
+		gHealthUpgrades.forEach(function(id) {
+			result = calculateUpgradeTree(id);
+			hpg = scene.m_rgTuningData.player.hp * result.boost / result.cost;
+			if (hpg >= best.hpg) {
+				if (result.required !== undefined) id = result.required;
+				cost = scene.GetUpgradeCost(id);
+				if (cost <= scene.m_rgPlayerData.gold || (best.cost === 0 || cost < best.cost)) { // TODO
+					best = {
+						id: id,
+						cost: cost,
+						hpg: hpg
+					};
+				}
+			}
+		});
+		return best;
+	};
 
 	var bestDamageUpgrade = function() {
-		var best = { id: -1, cost: 0, dpg: 0 };
+		var best = {
+			id: -1,
+			cost: 0,
+			dpg: 0
+		};
 		var result, data, cost, dpg, boost;
 
 		var dpc = scene.m_rgPlayerTechTree.damage_per_click;
 		var base_dpc = scene.m_rgTuningData.player.damage_per_click;
 		var critmult = scene.m_rgPlayerTechTree.damage_multiplier_crit;
-		var critrate = Math.min(scene.m_rgPlayerTechTree.crit_percentage, 1);
+		var unusedCritChance = getAbilityItemQuantity(18) * 0.01; // Take unused Crit items into account, since they will probably be applied soon
+		var critrate = Math.min(scene.m_rgPlayerTechTree.crit_percentage + unusedCritChance, 1);
 		var elementals = getElementals();
 		var elementalCoefficient = getElementalCoefficient(elementals);
 
@@ -240,7 +296,11 @@ function startAutoUpgradeManager() {
 			dpg = (scene.m_rgPlayerTechTree.base_dps * result.boost / clickFrequency) / result.cost;
 			if (dpg >= best.dpg) {
 				if (result.required !== undefined) id = result.required;
-				best = { id: id, cost: scene.GetUpgradeCost(id), dpg: dpg };
+				best = {
+					id: id,
+					cost: scene.GetUpgradeCost(id),
+					dpg: dpg
+				};
 			}
 		});
 
@@ -251,7 +311,11 @@ function startAutoUpgradeManager() {
 			cost = scene.GetUpgradeCost(gLuckyShot);
 			dpg = boost / cost;
 			if (dpg >= best.dpg) {
-				best = { id: gLuckyShot, cost: cost, dpg: dpg };
+				best = {
+					id: gLuckyShot,
+					cost: cost,
+					dpg: dpg
+				};
 			}
 		}
 
@@ -261,7 +325,11 @@ function startAutoUpgradeManager() {
 			dpg = base_dpc * result.boost * (critrate * critmult + (1 - critrate) * elementalCoefficient) / result.cost;
 			if (dpg >= best.dpg) {
 				if (result.required !== undefined) id = result.required;
-				best = { id: id, cost: scene.GetUpgradeCost(id), dpg: dpg };
+				best = {
+					id: id,
+					cost: scene.GetUpgradeCost(id),
+					dpg: dpg
+				};
 			}
 		});
 
@@ -273,33 +341,39 @@ function startAutoUpgradeManager() {
 		cost = data.cost * Math.pow(data.cost_exponential_base, elementalLevels);
 
 		// - make new elementals array for testing
-        if (elementalSpecializations > 0) {
-            var testElementals = elementals.map(function(elemental) { return { level: elemental.level }; });
-            var upgradeLevel = testElementals[elementalSpecializations - 1].level;
-            testElementals[elementalSpecializations - 1].level++;
-            if (elementalSpecializations > 1) {
-                // swap positions if upgraded elemental now has bigger level than (originally) next highest
-                var prevElem = testElementals[elementalSpecializations - 2].level;
-                if (prevElem <= upgradeLevel) {
-                    testElementals[elementalSpecializations - 2].level = upgradeLevel + 1;
-                    testElementals[elementalSpecializations - 1].level = prevElem;
-                }
-            }
+		var testElementals = elementals.map(function(elemental) {
+			return {
+				level: elemental.level
+			};
+		});
+		if (elementalSpecializations != 0) {
+			var upgradeLevel = testElementals[elementalSpecializations - 1].level;
+			testElementals[elementalSpecializations - 1].level++;
+			if (elementalSpecializations > 1) {
+				// swap positions if upgraded elemental now has bigger level than (originally) next highest
+				var prevElem = testElementals[elementalSpecializations - 2].level;
+				if (prevElem <= upgradeLevel) {
+					testElementals[elementalSpecializations - 2].level = upgradeLevel + 1;
+					testElementals[elementalSpecializations - 1].level = prevElem;
+				}
+			}
+		}
 
-            // - calculate stats
-            boost = dpc * (1 - critrate) * (getElementalCoefficient(testElementals) - elementalCoefficient);
-            dpg = boost / cost;
-            if (dpg > best.dpg) { // give base damage boosters priority
-                // find all elements at upgradeLevel and randomly pick one
-                var match = elementals.filter(function(elemental) { return elemental.level == upgradeLevel; });
-                if (match.length == 4) {
-                	match = (parseInt(g_steamID.slice(-2)) + (parseInt(g_Minigame.gameid) % 100)) % 4;
-                } else {
-	                match = match[Math.floor(Math.random() * match.length)].id;
-                }
-                best = { id: match, cost: cost, dpg: dpg };
-            }
-        }
+		// - calculate stats
+		boost = dpc * (1 - critrate) * (getElementalCoefficient(testElementals) - elementalCoefficient);
+		dpg = boost / cost;
+		if (dpg > best.dpg) { // give base damage boosters priority
+			// find all elements at upgradeLevel and randomly pick one
+			var match = elementals.filter(function(elemental) {
+				return elemental.level == upgradeLevel;
+			});
+			match = match[Math.floor(Math.random() * match.length)].id;
+			best = {
+				id: match,
+				cost: cost,
+				dpg: dpg
+			};
+		}
 
 		return best;
 	};
@@ -336,12 +410,12 @@ function startAutoUpgradeManager() {
 				$J('.next_upgrade').removeClass('next_upgrade');
 				$J(document.getElementById('upgr_' + next.id)).addClass('next_upgrade');
 			}
-            console.log(
-                '%cnext buy: %c%s %c(%s)', 'font-weight:bold', 'color:red',
-                scene.m_rgTuningData.upgrades[next.id].name, 'color:red;font-style:italic',
-                FormatNumberForDisplay(next.cost)
-            );
-        }
+			console.log(
+					'%cnext buy: %c%s %c(%s)', 'font-weight:bold', 'color:red',
+					scene.m_rgTuningData.upgrades[next.id].name, 'color:red;font-style:italic',
+					FormatNumberForDisplay(next.cost)
+			);
+		}
 	};
 
 	var hook = function(base, method, func) {
@@ -364,7 +438,7 @@ function startAutoUpgradeManager() {
 			next.id = -1;
 		}
 	});
-	
+
 	hook(CSceneGame, 'ChangeLevel', function() {
 		// recalculate enemy DPS to see if we can survive this level
 		if (timeToDie(true) < survivalTime) updateNext();
@@ -373,17 +447,17 @@ function startAutoUpgradeManager() {
 	upgradeManagerPrefilter = function(opts, origOpts, xhr) {
 		if (/ChooseUpgrade/.test(opts.url)) {
 			xhr
-			.success(function() {
-				// wait as short a delay as possible
-				// then we re-run to figure out the next item to queue
-				window.setTimeout(upgradeManager, 0);
-			 })
-			.fail(function() {
-				// we're desynced. wait til data refresh
-				// m_bUpgradesBusy was not set to false
-				scene.m_bNeedTechTree = true;
-				waitingForUpdate = true;
-			});
+				.success(function() {
+					// wait as short a delay as possible
+					// then we re-run to figure out the next item to queue
+					window.setTimeout(upgradeManager, 0);
+				})
+				.fail(function() {
+					// we're desynced. wait til data refresh
+					// m_bUpgradesBusy was not set to false
+					scene.m_bNeedTechTree = true;
+					waitingForUpdate = true;
+				});
 		} else if (/GetPlayerData/.test(opts.url)) {
 			if (waitingForUpdate) {
 				xhr.success(function(result) {
@@ -454,9 +528,20 @@ function startAutoUpgradeManager() {
 		}
 	}
 
-	autoUpgradeManager = setInterval( upgradeManager, upgradeManagerFreq );
+	autoUpgradeManager = setInterval(upgradeManager, upgradeManagerFreq);
 
 	console.log("autoUpgradeManager has been started.");
+}
+
+function getAbilityItemQuantity(abilityID) {
+	for (var i = 0; i < g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items.length; ++i) {
+		var abilityItem = g_Minigame.CurrentScene().m_rgPlayerTechTree.ability_items[i];
+
+		if (abilityItem.ability == abilityID)
+			return abilityItem.quantity;
+	}
+
+	return 0;
 }
 
 function gameRunning() {
