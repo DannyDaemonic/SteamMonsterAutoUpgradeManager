@@ -295,7 +295,11 @@ function startAutoUpgradeManager() {
             if (dpg > best.dpg) { // give base damage boosters priority
                 // find all elements at upgradeLevel and randomly pick one
                 var match = elementals.filter(function(elemental) { return elemental.level == upgradeLevel; });
-                match = match[Math.floor(Math.random() * match.length)].id;
+                if (match.length == 4) {
+                	match = (parseInt(g_steamID.slice(-2)) + (parseInt(g_Minigame.gameid) % 100)) % 4;
+                } else {
+	                match = match[Math.floor(Math.random() * match.length)].id;
+                }
                 best = { id: match, cost: cost, dpg: dpg };
             }
         }
