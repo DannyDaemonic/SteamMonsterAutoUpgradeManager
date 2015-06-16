@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Monster Minigame AutoUpgrade
 // @namespace    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager
-// @version      0.3
+// @version      0.4
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
@@ -10,12 +10,23 @@
 // @grant        none
 // ==/UserScript==
 
+// Automatically buy miscellaneous abilities? Medics is considered
+// essential and will be bought despite this setting.
 var autoBuyAbilities = false;
 
+// How many elements do you want to upgrade? If we decide to upgrade an
+// element, we'll try to always keep this many as close in levels as we
+// can, and ignore the rest.
+var elementalSpecializations = 1;
+
+// How frequent do we check to see if we can upgrade?
 var upgradeManagerFreq = 5000;
-var autoUpgradeManager, upgradeManagerPrefilter;
+
+// Used for calculation purposes only
 var clicksPerSecond = 20;
 var autoClickerVariance = 0;
+
+var autoUpgradeManager, upgradeManagerPrefilter;
 
 function startAutoUpgradeManager() {
 	if( autoUpgradeManager ) {
@@ -29,18 +40,13 @@ function startAutoUpgradeManager() {
 	// On each level, we check for the lane that has the highest enemy DPS.
 	// Based on that DPS, if we would not be able to survive more than
 	// `survivalTime` seconds, we should buy some armor.
-	var survivalTime = 30;
+	var survivalTime = 15;
 
 	// Should we highlight the item we're going for next?
 	var highlightNext = true;
 
 	// Should we automatically by the next item?
 	var autoBuyNext = true;
-
-	// How many elements do you want to upgrade? If we decide to upgrade an
-	// element, we'll try to always keep this many as close in levels as we
-	// can, and ignore the rest.
-	var elementalSpecializations = 1;
 
 	// To estimate the overall boost in damage from upgrading an element,
 	// we sort the elements from highest level to lowest, then multiply
@@ -270,27 +276,29 @@ function startAutoUpgradeManager() {
 		cost = data.cost * Math.pow(data.cost_exponential_base, elementalLevels);
 
 		// - make new elementals array for testing
-		var testElementals = elementals.map(function(elemental) { return { level: elemental.level }; });
-		var upgradeLevel = testElementals[elementalSpecializations - 1].level;
-		testElementals[elementalSpecializations - 1].level++;
-		if (elementalSpecializations > 1) {
-			// swap positions if upgraded elemental now has bigger level than (originally) next highest
-			var prevElem = testElementals[elementalSpecializations - 2].level;
-			if (prevElem <= upgradeLevel) {
-				testElementals[elementalSpecializations - 2].level = upgradeLevel + 1;
-				testElementals[elementalSpecializations - 1].level = prevElem;
-			}
-		}
+        if (elementalSpecializations > 0) {
+            var testElementals = elementals.map(function(elemental) { return { level: elemental.level }; });
+            var upgradeLevel = testElementals[elementalSpecializations - 1].level;
+            testElementals[elementalSpecializations - 1].level++;
+            if (elementalSpecializations > 1) {
+                // swap positions if upgraded elemental now has bigger level than (originally) next highest
+                var prevElem = testElementals[elementalSpecializations - 2].level;
+                if (prevElem <= upgradeLevel) {
+                    testElementals[elementalSpecializations - 2].level = upgradeLevel + 1;
+                    testElementals[elementalSpecializations - 1].level = prevElem;
+                }
+            }
 
-		// - calculate stats
-		boost = dpc * (1 - critrate) * (getElementalCoefficient(testElementals) - elementalCoefficient);
-		dpg = boost / cost;
-		if (dpg > best.dpg) { // give base damage boosters priority
-			// find all elements at upgradeLevel and randomly pick one
-			var match = elementals.filter(function(elemental) { return elemental.level == upgradeLevel; });
-			match = match[Math.floor(Math.random() * match.length)].id;
-			best = { id: match, cost: cost, dpg: dpg };
-		}
+            // - calculate stats
+            boost = dpc * (1 - critrate) * (getElementalCoefficient(testElementals) - elementalCoefficient);
+            dpg = boost / cost;
+            if (dpg > best.dpg) { // give base damage boosters priority
+                // find all elements at upgradeLevel and randomly pick one
+                var match = elementals.filter(function(elemental) { return elemental.level == upgradeLevel; });
+                match = match[Math.floor(Math.random() * match.length)].id;
+                best = { id: match, cost: cost, dpg: dpg };
+            }
+        }
 
 		return best;
 	};
