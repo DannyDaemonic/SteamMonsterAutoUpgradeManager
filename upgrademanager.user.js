@@ -395,14 +395,16 @@ function startAutoUpgradeManager() {
 
 	var updateNext = function() {
 		next = necessaryUpgrade();
-		if (next.id === -1) {
+		if (timeToDie() < survivalTime) {
 			if (true) {
 				next = bestHealthUpgrade();
-			} else {
+			}
+			
+			/* else {
 				var damage = bestDamageUpgrade();
 				var ability = nextAbilityUpgrade();
 				next = (damage.cost < ability.cost || ability.id === -1) ? damage : ability;
-			}
+			}*/
 		}
 		if (next.id !== -1) {
 			if (highlightNext) {
