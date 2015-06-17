@@ -305,7 +305,7 @@ function startAutoUpgradeManager() {
 		});
 
 		// check Lucky Shot
-		if (canUpgrade(gLuckyShot)) && critrate < 1 { // we don't want to spend money on Lucky Shot if crit rate is already maxed out
+		if (canUpgrade(gLuckyShot) && critrate < 1) { // we don't want to spend money on Lucky Shot if crit rate is already maxed out
 			data = scene.m_rgTuningData.upgrades[gLuckyShot];
 			boost = dpc * critrate * data.multiplier;
 			cost = scene.GetUpgradeCost(gLuckyShot);
