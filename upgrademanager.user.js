@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Monster Minigame AutoUpgrade No Elemental No Auto-DPS Fork
 // @namespace    https://github.com/Pawsed/SteamMonsterAutoUpgradeManager/
-// @version      0.7
+// @version      0.7.1
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
@@ -396,7 +396,7 @@ function startAutoUpgradeManager() {
 	var updateNext = function() {
 		next = necessaryUpgrade();
 		if (next.id === -1) {
-			if (timeToDie() < survivalTime) {
+			if (true) {
 				next = bestHealthUpgrade();
 			} else {
 				var damage = bestDamageUpgrade();
