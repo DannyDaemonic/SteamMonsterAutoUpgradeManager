@@ -1,15 +1,14 @@
 // ==UserScript==
-// @name         Monster Minigame AutoUpgrade
-// @namespace    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager
+// @name         Monster Minigame AutoUpgrade No Elemental No Auto-DPS Fork
+// @namespace    https://github.com/Pawsed/SteamMonsterAutoUpgradeManager/
 // @version      0.7
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
-// @updateURL    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager/raw/master/upgrademanager.user.js
-// @downloadURL  https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager/raw/master/upgrademanager.user.js
+// @updateURL    https://github.com/Pawsed/SteamMonsterAutoUpgradeManager/raw/master/upgrademanager.user.js
+// @downloadURL  https://github.com/Pawsed/SteamMonsterAutoUpgradeManager/raw/master/upgrademanager.user.js
 // @grant        none
 // ==/UserScript==
-
 // Automatically buy miscellaneous abilities? Medics is considered
 // essential and will be bought despite this setting.
 var autoBuyAbilities = false;
@@ -17,7 +16,7 @@ var autoBuyAbilities = false;
 // How many elements do you want to upgrade? If we decide to upgrade an
 // element, we'll try to always keep this many as close in levels as we
 // can, and ignore the rest.
-var elementalSpecializations = 1;
+var elementalSpecializations = 0;
 
 // How frequent do we check to see if we can upgrade?
 var upgradeManagerFreq = 5000;
@@ -293,15 +292,15 @@ function startAutoUpgradeManager() {
 		// check auto damage upgrades
 		gAutoUpgrades.forEach(function(id) {
 			result = calculateUpgradeTree(id);
-			dpg = (scene.m_rgPlayerTechTree.base_dps * result.boost / clickFrequency) / result.cost;
-			if (dpg >= best.dpg) {
+			dpg = (scene.m_rgPlayerTechTree.base_dps * result.boost / 10000000000) / result.cost;
+			/*if (dpg >= best.dpg) {
 				if (result.required !== undefined) id = result.required;
 				best = {
 					id: id,
 					cost: scene.GetUpgradeCost(id),
 					dpg: dpg
 				};
-			}
+			}*/
 		});
 
 		// check Lucky Shot
