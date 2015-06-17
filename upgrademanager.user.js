@@ -75,20 +75,12 @@ function startAutoUpgradeManager() {
 	var necessary = [
 		{
 			id: 0,
-			level: 1
+			level: 10
 		}, // Light Armor
 		{
 			id: 11,
 			level: 1
 		}, // Medics
-		{
-			id: 2,
-			level: 10
-		}, // Armor Piercing Round
-		{
-			id: 1,
-			level: 10
-		}, // Auto-fire Cannon
 	];
 
 	var gAbilities = [
