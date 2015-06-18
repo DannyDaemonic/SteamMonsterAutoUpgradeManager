@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Monster Minigame AutoUpgrade
 // @namespace    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager
-// @version      0.8
+// @version      0.9
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
@@ -347,7 +347,7 @@ function startAutoUpgradeManager() {
 				level: elemental.level
 			};
 		});
-		if (elementalSpecializations != 0) {
+		if (elementalSpecializations !== 0) {
 			var upgradeLevel = testElementals[elementalSpecializations - 1].level;
 			testElementals[elementalSpecializations - 1].level++;
 			if (elementalSpecializations > 1) {
@@ -384,7 +384,7 @@ function startAutoUpgradeManager() {
 		
 		// if the room is not moving slowly
 		if (lootCost < best.cost / levelTime) {
-		  // arbitrarily back off
+			// arbitrarily back off
 			if (
 				(lootRate < 100 && lootCost < best.cost * 0.010) ||
 				(lootRate <  70 && lootCost < best.cost * 0.050) ||
@@ -401,7 +401,7 @@ function startAutoUpgradeManager() {
 				dpg: gBossLoot.cost
 			};
 		}
-                
+
 		return best;
 	};
 
@@ -572,25 +572,22 @@ function getAbilityItemQuantity(abilityID) {
 }
 
 function gameRunning() {
-    return g_Minigame && g_Minigame.CurrentScene() && g_Minigame.CurrentScene().m_bRunning;
+	return g_Minigame && g_Minigame.CurrentScene() && g_Minigame.CurrentScene().m_bRunning;
 }
 
 function tryStart() {
-    if (!gameRunning()) {
-        setTimeout(tryStart, 1000);
-    } else {
-        if (!upgradeManagerPrefilter) {
-            // add prefilter on first run
-            $J.ajaxPrefilter(function() {
-                // this will be defined by the end of the script
-                upgradeManagerPrefilter.apply(this, arguments);
-            });
-        }
-        startAutoUpgradeManager();
-        /*upgradeManager = startAutoUpgradeManager();
-        if (upgradeManagerTimer) window.clearTimeout(upgradeManagerTimer);
-        var upgradeManagerTimer = window.setInterval(upgradeManager, 5000);*/
-    }
+	if (!gameRunning()) {
+		setTimeout(tryStart, 1000);
+	} else {
+		if (!upgradeManagerPrefilter) {
+			// add prefilter on first run
+			$J.ajaxPrefilter(function() {
+			// this will be defined by the end of the script
+			upgradeManagerPrefilter.apply(this, arguments);
+			});
+		}
+		startAutoUpgradeManager();
+	}
 }
 
 setTimeout(tryStart, 5000);
