@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Monster Minigame AutoUpgrade (No Elemental Specializations)
 // @namespace    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager
-// @version      0.9
+// @version      0.9.1
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
