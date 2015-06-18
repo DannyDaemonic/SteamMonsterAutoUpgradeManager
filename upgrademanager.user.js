@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Monster Minigame AutoUpgrade
 // @namespace    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager
-// @version      0.7
+// @version      0.8
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
@@ -104,6 +104,7 @@ function startAutoUpgradeManager() {
 	];
 
 	var gLuckyShot = 7;
+	var gBossLoot = 19;
 	var gElementalUpgrades = [3, 4, 5, 6]; // Fire, Water, Earth, Air
 
 	var gHealthUpgrades = [];
@@ -375,6 +376,32 @@ function startAutoUpgradeManager() {
 			};
 		}
 
+		// check Boss Loot
+		var lootRate = Math.round(g_Minigame.m_CurrentScene.m_rgPlayerTechTree.boss_loot_drop_percentage * 100);
+		var levelTime = (g_Minigame.m_CurrentScene.m_rgGameData.timestamp - g_Minigame.m_CurrentScene.m_rgGameData.timestamp_game_start) / g_Minigame.m_CurrentScene.m_rgGameData.level;
+		var lootCost = scene.GetUpgradeCost(gBossLoot);
+		var lootEfficient = false;
+		
+		// if the room is not moving slowly
+		if (lootCost < best.cost / levelTime) {
+		  // arbitrarily back off
+			if (
+				(lootRate < 100 && lootCost < best.cost * 0.010) ||
+				(lootRate <  70 && lootCost < best.cost * 0.050) ||
+				(lootRate <  40 && lootCost < best.cost * 0.100)
+			) {
+				lootEfficient = true;
+			}
+		}
+
+		if (canUpgrade(gBossLoot) && lootEfficient) {
+			best = {
+				id: gBossLoot,
+				cost: lootCost,
+				dpg: gBossLoot.cost
+			};
+		}
+                
 		return best;
 	};
 
