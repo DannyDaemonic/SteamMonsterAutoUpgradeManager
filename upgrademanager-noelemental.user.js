@@ -5,8 +5,8 @@
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
-// @updateURL    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager/raw/master/upgrademanager.user.js
-// @downloadURL  https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager/raw/master/upgrademanager.user.js
+// @updateURL    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager/raw/master/upgrademanager-noelemental.user.js
+// @downloadURL  https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager/raw/master/upgrademanager-noelemental.user.js
 // @grant        none
 // ==/UserScript==
 
