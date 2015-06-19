@@ -76,7 +76,7 @@ function startAutoUpgradeManager() {
 	var necessary = [
 		{
 			id: 0,
-			level: 10
+			level: 1
 		}, // Light Armor
 		{
 			id: 11,
