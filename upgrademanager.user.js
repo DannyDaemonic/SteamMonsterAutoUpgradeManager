@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Monster Minigame AutoUpgrade
 // @namespace    https://github.com/DannyDaemonic/SteamMonsterAutoUpgradeManager
-// @version      0.9
+// @version      0.9.9
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
@@ -76,7 +76,7 @@ function startAutoUpgradeManager() {
 	var necessary = [
 		{
 			id: 0,
-			level: 1
+			level: 10
 		}, // Light Armor
 		{
 			id: 11,
@@ -216,8 +216,8 @@ function startAutoUpgradeManager() {
 			cost: 0
 		};
 		var wanted, id;
-		while (necessary.length > 0) {
-			wanted = necessary[0];
+		for (var i = 0; i < necessary.length > 0; i++) {
+			wanted = necessary[i];
 			id = wanted.id;
 			if (scene.GetUpgradeLevel(id) < wanted.level) {
 				best = {
@@ -226,7 +226,6 @@ function startAutoUpgradeManager() {
 				};
 				break;
 			}
-			necessary.shift();
 		}
 		return best;
 	};
