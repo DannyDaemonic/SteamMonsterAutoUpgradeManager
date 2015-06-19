@@ -25,7 +25,7 @@ var upgradeManagerFreq = 500;
 var clicksPerSecond = 20;
 var autoClickerVariance = 0;
 
-var survivalTime = 30;
+var survivalTime = 2;
 var autoUpgradeManager, upgradeManagerPrefilter;
 
 function startAutoUpgradeManager() {
