@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Monster Minigame AutoUpgrade No Elemental No Auto-DPS Fork
 // @namespace    https://github.com/Pawsed/SteamMonsterAutoUpgradeManager/
-// @version      1.0.0
+// @version      1.0.1
 // @description  An automatic upgrade manager for the 2015 Summer Steam Monster Minigame
 // @match        *://steamcommunity.com/minigame/towerattack*
 // @match        *://steamcommunity.com//minigame/towerattack*
@@ -19,11 +19,7 @@ var autoBuyAbilities = false;
 var elementalSpecializations = 0;
 
 // How frequent do we check to see if we can upgrade?
-var upgradeManagerFreq = 500;
-
-// Used for calculation purposes only
-var clicksPerSecond = 20;
-var autoClickerVariance = 0;
+var upgradeManagerFreq = 200;
 
 var survivalTime = 2;
 var autoUpgradeManager, upgradeManagerPrefilter;
@@ -59,7 +55,6 @@ function startAutoUpgradeManager() {
 	// down their DPS boosts for an accurate comparison to clicking. This
 	// is approximately how many clicks per second we should assume you are
 	// consistently doing. If you have an autoclicker, this is easy to set.
-	var clickFrequency = clicksPerSecond + Math.ceil(autoClickerVariance / 2);
 
 	/***********
 	 * GLOBALS *
@@ -76,7 +71,7 @@ function startAutoUpgradeManager() {
 		{
 			id: 11,
 			level: 1
-		}, // Medics
+		} // Medics
 	];
 
 	var gAbilities = [
@@ -87,7 +82,7 @@ function startAutoUpgradeManager() {
 		17, // Cluster Bomb
 		14, // Metal Detector
 		15, // Decrease Cooldowns
-		12, // Morale Booster
+		12 // Morale Booster
 	];
 
 	var gLuckyShot = 7;
