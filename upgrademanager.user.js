@@ -22,7 +22,7 @@ var elementalSpecializations = 0;
 var upgradeManagerPeriod = 500;
 var busyCount = 0;
 
-var survivalTime = 10;
+var survivalTime = 15;
 var autoUpgradeManager, upgradeManagerPrefilter;
 
 function startAutoUpgradeManager() {
